@@ -9,15 +9,15 @@ import (
 	"strings"
 )
 
-//Import imports a graph from the specified file returns the Graph, a map for
+// Import imports a graph from the specified file returns the Graph, a map for
 // if the nodes are not integers and an error if needed.
 func Import(filename string) (g Graph, err error) {
 	g.usingMap = false
-	var lowestIndex int
-	var i int
-	var arc int
-	var dist int64
-	var ok bool
+	var lowestIndex int // lowestIndex 用于跟踪节点映射的最低整数索引
+	var i int           // i 是当前正在处理的节点的索引
+	var arc int         // arc 是边的目标节点的索引
+	var dist int64      // dist 是边的权重
+	var ok bool         //ok 是一个布尔值，表示在映射中查找是否成功
 	got, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return
@@ -38,6 +38,9 @@ func Import(filename string) (g Graph, err error) {
 				lowestIndex++
 			}
 		} else {
+			// 两个边界
+			// 如果少了一行怎么办 见*1行，如果节点的数量小于等于当前节点索引 i，则扩展节点切片。
+			// 如果转化失败怎么办 自动转成使用string-int映射
 			i, err = strconv.Atoi(f[0])
 			if err != nil {
 				g.usingMap = true
@@ -46,9 +49,12 @@ func Import(filename string) (g Graph, err error) {
 				lowestIndex++
 			}
 		}
-		if temp := len(g.Verticies); temp <= i { //Extend if we have to
-			g.Verticies = append(g.Verticies, make([]Vertex, 1+i-len(g.Verticies))...)
-			for ; temp < len(g.Verticies); temp++ {
+		if temp := len(g.Verticies); temp <= i { //Extend if we have to // *1
+			// 创建1+i-len(g.Verticies)个空节点追加到g.Verticies中
+			// 对于普通情况，就是为第i个节点创建一个节点实例
+			// 但是对于漏掉一行，如M.txt中没有下标为3的行，此时temp == len(g.Verticies) == 3， i == 4 , 1+i-len(g.Verticies) == 2
+			g.Verticies = append(g.Verticies, make([]Vertex, 1+i-len(g.Verticies))...) // 此时 len(g.Verticies) == 5
+			for ; temp < len(g.Verticies); temp++ {                                    // 3 < 5
 				g.Verticies[temp].ID = temp
 				g.Verticies[temp].arcs = map[int]int64{}
 				g.Verticies[temp].bestVerticies = []int{-1}
@@ -90,7 +96,7 @@ func Import(filename string) (g Graph, err error) {
 	return
 }
 
-//ExportToFile exports the verticies to file currently does not take into account
+// ExportToFile exports the verticies to file currently does not take into account
 // mappings (from string to int)
 func (g Graph) ExportToFile(filename string) error {
 	var i string

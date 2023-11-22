@@ -20,6 +20,14 @@ func TestCorrectFormat(t *testing.T) {
 	test(t, getAGraph(), map[string]int{}, nil, "testdata/A.txt")
 }
 
+func TestCorrectFormatM(t *testing.T) {
+	test(t, getAGraph(), map[string]int{}, nil, "testdata/M.txt")
+}
+
+func TestCorrectFormatN(t *testing.T) {
+	test(t, getNGraph(), map[string]int{}, nil, "testdata/N.txt")
+}
+
 func TestCorrectFormatNegatives(t *testing.T) {
 	test(t, getCGraph(), map[string]int{}, nil, "testdata/C.txt")
 }
@@ -136,6 +144,20 @@ func getAGraph() Graph {
 			{4, 0, []int{-1}, map[int]int64{
 				3: 1},
 			},
+		},
+		priorityQueueNewShort(), //newLinkedList(),
+		map[string]int{},
+		false,
+		0, false,
+	}
+}
+
+func getNGraph() Graph {
+	return Graph{
+		0, false,
+		[]Vertex{
+			{0, 0, []int{-1}, map[int]int64{1: 12}},
+			{1, 0, []int{-1}, map[int]int64{0: 12}},
 		},
 		priorityQueueNewShort(), //newLinkedList(),
 		map[string]int{},
